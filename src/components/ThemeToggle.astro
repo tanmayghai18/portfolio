@@ -1,0 +1,39 @@
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to light mode">
+  [light]
+</button>
+
+<script>
+  const storageKey = "theme";
+
+  function currentTheme() {
+    return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  }
+
+  function labelFor(theme) {
+    return theme === "dark" ? "[light]" : "[dark]";
+  }
+
+  function apply(theme) {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem(storageKey, theme);
+    } catch {}
+    if (typeof window.__setFavicon === "function") {
+      window.__setFavicon(theme);
+    }
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+      button.textContent = labelFor(theme);
+      button.setAttribute(
+        "aria-label",
+        theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
+      );
+    });
+  }
+
+  document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+    button.textContent = labelFor(currentTheme());
+    button.addEventListener("click", () => {
+      apply(currentTheme() === "dark" ? "light" : "dark");
+    });
+  });
+</script>

@@ -1,0 +1,36 @@
+---
+interface Item {
+  data: {
+    title: string;
+    url: string;
+    date?: string;
+    venue?: string;
+  };
+}
+
+interface Props {
+  items: Item[];
+  empty: string;
+}
+
+const { items, empty } = Astro.props;
+---
+
+{
+  items.length ? (
+    <ul class="rows">
+      {items.map((item) => (
+        <li>
+          <a class="link" href={item.data.url} target="_blank" rel="noopener noreferrer">
+            {item.data.title}
+          </a>
+          {(item.data.venue || item.data.date) && (
+            <span class="row-meta">{[item.data.venue, item.data.date].filter(Boolean).join(" · ")}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="muted">{empty}</p>
+  )
+}

@@ -1,0 +1,12 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+}
+
+const { src, alt = "" } = Astro.props;
+---
+
+<div class="avatar" tabindex="0">
+  <img src={src} alt={alt} width="80" height="80" decoding="async" />
+</div>
