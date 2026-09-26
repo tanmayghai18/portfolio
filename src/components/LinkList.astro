@@ -11,14 +11,15 @@ interface Item {
 interface Props {
   items: Item[];
   empty: string;
+  bulleted?: boolean;
 }
 
-const { items, empty } = Astro.props;
+const { items, empty, bulleted = false } = Astro.props;
 ---
 
 {
   items.length ? (
-    <ul class="rows">
+    <ul class:list={["rows", { bulleted }]}>
       {items.map((item) => (
         <li>
           <a class="link" href={item.data.url} target="_blank" rel="noopener noreferrer">

@@ -7,6 +7,16 @@ interface Props {
 const { src, alt = "" } = Astro.props;
 ---
 
-<div class="avatar" tabindex="0">
+<button type="button" class="avatar" data-avatar-toggle aria-pressed="false" aria-label="Show color portrait">
   <img src={src} alt={alt} width="80" height="80" decoding="async" />
-</div>
+</button>
+
+<script>
+  document.querySelectorAll("[data-avatar-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const on = button.classList.toggle("is-color");
+      button.setAttribute("aria-pressed", String(on));
+      button.setAttribute("aria-label", on ? "Show grayscale portrait" : "Show color portrait");
+    });
+  });
+</script>

@@ -15,9 +15,8 @@ function byOrderDesc<T extends { data: { order: number } }>(items: T[]) {
 
 export async function getSiteData() {
   const profile = await getProfile();
-  const [writing, music, research] = await Promise.all([
+  const [writing, research] = await Promise.all([
     getCollection("writing"),
-    getCollection("music"),
     getCollection("research"),
   ]);
 
@@ -27,7 +26,6 @@ export async function getSiteData() {
   return {
     profile,
     writing: byOrderDesc(writing),
-    music: byOrderDesc(music),
     research: byOrderDesc(papers),
     researchIntro: intro ? await render(intro) : null,
     socials: socialsFrom(profile.data),
@@ -42,7 +40,7 @@ export async function renderProfile() {
 export type Social = {
   href: string;
   label: string;
-  icon: "twitter" | "github" | "linkedin" | "scholar" | "pen" | "instagram";
+  icon: "twitter" | "github" | "linkedin" | "scholar" | "pen";
 };
 
 function socialsFrom(data: CollectionEntry<"profile">["data"]): Social[] {
@@ -57,10 +55,6 @@ function socialsFrom(data: CollectionEntry<"profile">["data"]): Social[] {
   }
 
   links.push({ href: data.substack, label: "Substack", icon: "pen" });
-
-  if (data.instagram) {
-    links.push({ href: data.instagram, label: "Instagram", icon: "instagram" });
-  }
 
   return links;
 }

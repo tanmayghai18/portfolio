@@ -11,7 +11,6 @@ Edit markdown in `src/content/`:
 - `profile/` — name, links, and About copy
 - `research/` — intro blurb (`kind: intro`) and papers (`kind: paper`)
 - `writing/` — posts
-- `music/` — Instagram covers
 
 Each list entry needs `title`, `url`, and `order` (higher = first).
 

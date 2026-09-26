@@ -17,7 +17,6 @@ const profile = defineCollection({
     linkedin: z.string().url(),
     twitter: z.string().url(),
     substack: z.string().url(),
-    instagram: z.string().url().optional(),
     scholar: z.string().url().optional(),
     previous: z
       .array(
@@ -35,11 +34,6 @@ const writing = defineCollection({
   schema: linkItem,
 });
 
-const music = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/music" }),
-  schema: linkItem,
-});
-
 const research = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/research" }),
   schema: linkItem.extend({
@@ -48,4 +42,4 @@ const research = defineCollection({
   }),
 });
 
-export const collections = { profile, writing, music, research };
+export const collections = { profile, writing, research };

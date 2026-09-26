@@ -1,47 +1,26 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Avatar from "../components/Avatar.astro";
+import TypedHero from "../components/TypedHero.astro";
 import LinkList from "../components/LinkList.astro";
 import SectionHead from "../components/SectionHead.astro";
 import Socials from "../components/Socials.astro";
 import { getSiteData, renderProfile } from "../lib/site";
 
-const { profile, writing, music, research, researchIntro, socials } = await getSiteData();
+const { profile, writing, research, researchIntro, socials } = await getSiteData();
 const { Content } = await renderProfile();
-const { name, tagline, linkedin, substack, instagram, scholar, previous } = profile.data;
+const { name, tagline, linkedin, substack, scholar, previous } = profile.data;
 ---
 
 <Layout title={name} description={tagline}>
   <main id="main">
     <div class="hero">
       <Avatar src="/tanmay.jpeg" alt="Portrait of Tanmay Ghai" />
-      <header>
-        <h1><a href="/">{name}</a></h1>
-        <p class="bio">{tagline}</p>
-        {
-          previous.length > 0 && (
-            <p class="bio">
-              Previous:{" "}
-              {previous.map((item, index) => (
-                <>
-                  {index > 0 ? ", " : ""}
-                  {item.url ? (
-                    <a class="link" href={item.url} target="_blank" rel="noopener noreferrer">
-                      {item.name}
-                    </a>
-                  ) : (
-                    <b>{item.name}</b>
-                  )}
-                </>
-              ))}
-            </p>
-          )
-        }
-      </header>
+      <TypedHero name={name} tagline={tagline} previous={previous} />
     </div>
 
     <section id="about" aria-label="About">
-      <SectionHead id="about" title="About" icon="doc" actionHref={linkedin} actionLabel="LinkedIn" />
+      <SectionHead id="about" title="About" icon="user" actionHref={linkedin} actionLabel="LinkedIn" />
       <div class="markdown">
         <Content />
       </div>
@@ -63,17 +42,12 @@ const { name, tagline, linkedin, substack, instagram, scholar, previous } = prof
           </h3>
         )
       }
-      <LinkList items={research} empty="Nothing listed here yet." />
+      <LinkList items={research} empty="Nothing listed here yet." bulleted />
     </section>
 
     <section id="writing" aria-label="Writing">
       <SectionHead id="writing" title="Writing" icon="pen" actionHref={substack} actionLabel="Substack" />
       <LinkList items={writing} empty="Nothing published here yet." />
-    </section>
-
-    <section id="music" aria-label="Music">
-      <SectionHead id="music" title="Music" icon="music" actionHref={instagram} actionLabel="Instagram" />
-      <LinkList items={music} empty="Nothing posted here yet." />
     </section>
   </main>
 

@@ -1,0 +1,157 @@
+---
+interface Props {
+  name: string;
+  tagline: string;
+  previous: { name: string; url?: string }[];
+}
+
+const { name, tagline, previous } = Astro.props;
+---
+
+<header data-typed-hero>
+  <h1>
+    <a href="/" class="typed-name" data-typed-line="0" aria-label={name}
+      ><span class="typed-caret" data-typed-caret aria-hidden="true"></span></a
+    >
+  </h1>
+  <p class="bio" data-typed-line="1" aria-label={tagline}></p>
+  {
+    previous.length > 0 && (
+      <p
+        class="bio"
+        data-typed-line="2"
+        aria-label={`Previous: ${previous.map((item) => item.name).join(", ")}`}
+      ></p>
+    )
+  }
+  <noscript>
+    <h1><a href="/">{name}</a></h1>
+    <p class="bio">{tagline}</p>
+    {
+      previous.length > 0 && (
+        <p class="bio">
+          Previous:{" "}
+          {previous.map((item, index) => (
+            <>
+              {index > 0 ? ", " : ""}
+              {item.url ? (
+                <a class="link" href={item.url} target="_blank" rel="noopener noreferrer">
+                  {item.name}
+                </a>
+              ) : (
+                <b>{item.name}</b>
+              )}
+            </>
+          ))}
+        </p>
+      )
+    }
+  </noscript>
+</header>
+
+<script define:vars={{ name, tagline, previous }}>
+  const root = document.querySelector("[data-typed-hero]");
+  const caret = document.querySelector("[data-typed-caret]");
+  const delay = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+  function typeInto(node, text) {
+    return new Promise((resolve) => {
+      if (!text) {
+        resolve();
+        return;
+      }
+      let i = 0;
+      const tick = () => {
+        i += 1;
+        node.textContent = text.slice(0, i);
+        if (i < text.length) window.setTimeout(tick, 40);
+        else resolve();
+      };
+      tick();
+    });
+  }
+
+  function follow(line) {
+    if (caret instanceof HTMLElement && line instanceof HTMLElement) line.appendChild(caret);
+  }
+
+  async function typePlain(line, text) {
+    const node = document.createElement("span");
+    line.appendChild(node);
+    follow(line);
+    await typeInto(node, text);
+  }
+
+  async function typeSegment(parent, text, options = {}) {
+    const { href, className, tag } = options;
+    const node = document.createElement(href ? "a" : tag || "span");
+    if (className) node.className = className;
+    if (href) {
+      node.href = href;
+      node.target = "_blank";
+      node.rel = "noopener noreferrer";
+    }
+    parent.appendChild(node);
+    follow(parent);
+    await typeInto(node, text);
+  }
+
+  async function run() {
+    if (!(root instanceof HTMLElement)) return;
+    const nameLine = root.querySelector('[data-typed-line="0"]');
+    const tagLine = root.querySelector('[data-typed-line="1"]');
+    const prevLine = root.querySelector('[data-typed-line="2"]');
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduce) {
+      if (nameLine) nameLine.textContent = name;
+      if (tagLine) tagLine.textContent = tagline;
+      if (prevLine instanceof HTMLElement) {
+        prevLine.append("Previous: ");
+        previous.forEach((item, index) => {
+          if (index > 0) prevLine.append(", ");
+          if (item.url) {
+            const link = document.createElement("a");
+            link.className = "link";
+            link.href = item.url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = item.name;
+            prevLine.append(link);
+          } else {
+            const bold = document.createElement("b");
+            bold.textContent = item.name;
+            prevLine.append(bold);
+          }
+        });
+      }
+      caret?.remove();
+      return;
+    }
+
+    if (nameLine instanceof HTMLElement) {
+      await typePlain(nameLine, name);
+    }
+    await delay(140);
+    if (tagLine instanceof HTMLElement) {
+      await typePlain(tagLine, tagline);
+    }
+    await delay(140);
+    if (prevLine instanceof HTMLElement) {
+      follow(prevLine);
+      await typeSegment(prevLine, "Previous: ");
+      for (let i = 0; i < previous.length; i += 1) {
+        if (i > 0) await typeSegment(prevLine, ", ");
+        const item = previous[i];
+        if (item.url) {
+          await typeSegment(prevLine, item.name, { href: item.url, className: "link" });
+        } else {
+          await typeSegment(prevLine, item.name, { tag: "b" });
+        }
+      }
+    }
+    caret?.classList.add("is-done");
+  }
+
+  run();
+</script>
